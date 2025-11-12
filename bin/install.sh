@@ -1,15 +1,17 @@
 #!/bin/bash
 
-cd "$HOME" || exit
+let install_location="$HOME"/.local/opt/
 
-mkdir temp_____
+mkdir -p "$install_location"
+cd "$install_location"
 
-cd temp_____ || exit
 rm -rf francinette
 
 # download github
 git clone --recursive https://github.com/xicodomingues/francinette.git
 
+# TODO handle rootless execution
+: '
 if [ "$(uname)" != "Darwin" ]; then
 	echo "Admin permissions needed to install C compilers, python, and upgrade current packages"
 	case $(lsb_release -is) in
@@ -29,13 +31,9 @@ if [ "$(uname)" != "Darwin" ]; then
 			;;
 	esac
 fi
+'
 
-cp -r francinette "$HOME"
-
-cd "$HOME" || exit
-rm -rf temp_____
-
-cd "$HOME"/francinette || exit
+cd "$install_location"/francinette || exit
 
 # start a venv inside francinette
 if ! python3 -m venv venv ; then
@@ -53,32 +51,23 @@ if ! pip3 install -r requirements.txt ; then
 	exit 1
 fi
 
-RC_FILE="$HOME/.zshrc"
+cd "$HOME"/.local/bin/
 
-if [ "$(uname)" != "Darwin" ]; then
-	RC_FILE="$HOME/.bashrc"
-	if [[ -f "$HOME/.zshrc" ]]; then
-		RC_FILE="$HOME/.zshrc"
-	fi
+if [[ ":$PATH:" != *":$(pwd):"* ]]; then
+	echo "adding ~/.local/bin/ to PATH"
+	export PATH="$PATH:$(pwd)"
 fi
 
-echo "try to add alias in file: $RC_FILE"
+echo "$install_location/francinette/tester.sh" > ./francinette
+chmod a+x ./francinette
 
-# set up the alias
-if ! grep "francinette=" "$RC_FILE" &> /dev/null; then
-	echo "francinette alias not present"
-	printf "\nalias francinette=%s/francinette/tester.sh\n" "$HOME" >> "$RC_FILE"
-fi
-
-if ! grep "paco=" "$RC_FILE" &> /dev/null; then
-	echo "Short alias not present. Adding it"
-	printf "\nalias paco=%s/francinette/tester.sh\n" "$HOME" >> "$RC_FILE"
+read -p "create \"paco\" shorthand ? [y/N]" is_paco_ok
+if [ ${is_paco_ok,,} == 'y' ]; then
+	echo "$install_location/francinette/tester.sh" > ./paco
+	chmod a+x ./paco
 fi
 
 # print help
 "$HOME"/francinette/tester.sh --help
-
-# automatically replace current shell with new one.
-exec "$SHELL"
 
 printf "\033[33m... and don't forget, \033[1;37mpaco\033[0;33m is not a replacement for your own tests! \033[0m\n"
