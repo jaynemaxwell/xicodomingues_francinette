@@ -48,6 +48,7 @@ export VIRTUAL_ENV=$(pwd)
 source ./bin/activate
 '
 
+# TODO check if redundant now that we're using target
 export PYTHONUSERBASE=$(pwd)
 echo $PYTHONUSERBASE
 
