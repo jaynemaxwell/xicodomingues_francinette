@@ -135,3 +135,7 @@ dmypy.json
 .DS_Store
 /logs/
 utils/update.toml
+
+
+# we are actually shipping a partial venv for compatibility reasons (pipes)
+!venv/

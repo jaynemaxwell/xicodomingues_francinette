@@ -1,14 +1,14 @@
 #!/bin/bash
 
-let install_location="$HOME"/.local/opt/
+install_location="$HOME/.local/opt/"
 
 mkdir -p "$install_location"
 cd "$install_location"
 
-rm -rf francinette
+#rm -rf ./francinette
 
 # download github
-git clone --recursive https://github.com/xicodomingues/francinette.git
+git clone --recursive https://github.com/jaynemaxwell/xicodomingues_francinette.git francinette
 
 # TODO handle rootless execution
 : '
@@ -33,41 +33,42 @@ if [ "$(uname)" != "Darwin" ]; then
 fi
 '
 
-cd "$install_location"/francinette || exit
+cd "$install_location/francinette" || exit
 
-# start a venv inside francinette
-if ! python3 -m venv venv ; then
-	echo "Please make sure than you can create a python virtual environment"
-	echo 'Contact me if you have no idea how to proceed (fsoares- on slack)'
-	exit 1
-fi
+# the venv is now bundled except for packages
 
 # activate venv
 . venv/bin/activate
 
 # install requirements
-if ! pip3 install -r requirements.txt ; then
+if ! python -m pip install -r requirements.txt ; then
 	echo 'Problem launching the installer. Contact me (fsoares- on slack)'
 	exit 1
 fi
 
-cd "$HOME"/.local/bin/
+mkdir -p "$HOME/.local/bin/"
+cd "$HOME/.local/bin/"
 
 if [[ ":$PATH:" != *":$(pwd):"* ]]; then
-	echo "adding ~/.local/bin/ to PATH"
-	export PATH="$PATH:$(pwd)"
+	read -p "Do you wish to add ~/.local/bin/ to PATH ? [Y/n]" add_to_path
+	if [[ ${add_to_path,,} != 'n' ]]; then
+		echo "export PATH='$PATH:$(pwd)'" >> $HOME/.${SHELL##/bin/}rc
+		echo "SUCCESS : appended directory to PATH"
+	else
+		echo "WARNING : selected install location not found in PATH (francinette will not be available unless manually inserted into scope)"
+	fi
 fi
 
 echo "$install_location/francinette/tester.sh" > ./francinette
 chmod a+x ./francinette
 
 read -p "create \"paco\" shorthand ? [y/N]" is_paco_ok
-if [ ${is_paco_ok,,} == 'y' ]; then
+if [[ ${is_paco_ok,,} = 'y' ]]; then
 	echo "$install_location/francinette/tester.sh" > ./paco
 	chmod a+x ./paco
 fi
 
 # print help
-"$HOME"/francinette/tester.sh --help
+"$install_location/francinette/tester.sh" --help
 
 printf "\033[33m... and don't forget, \033[1;37mpaco\033[0;33m is not a replacement for your own tests! \033[0m\n"
