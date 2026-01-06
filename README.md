@@ -73,7 +73,7 @@ bash -c "$(curl -fsSL https://raw.github.com/jaynemaxwell/rancinette/master/bin/
 
 the default installation directory is under `~/.local/opt/`.
 
-the entry point will, by default, live in `~/.local/bin/`.
+the entry point(s) will, by default, live in `~/.local/bin/`.
 
 note that eventually the installer may prompt for custom locations for either of these.
 
