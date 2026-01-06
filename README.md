@@ -1,9 +1,15 @@
-# Francinette
+# rancinette
 
-## :exclamation: This repo is long abandoned. It's probably way out of date, and does not work on newer systems. Please seek other alternatives. :exclamation:
+a fork of the [Francinette](https://github.com/xicodomingues/francinette) aiming to maintain the project just enough to be able to be installed and used.
 
-# Also: write your own tests!!
-#
+this is not a revival of the original project.
+
+despite the name change, which only concerns the present repository, every relevant aspect of the Francinette remains unaffected.
+
+## this project is on life support.
+i have wasted way too much time bringing it back from the dead, fixing issues that prevented installation partially or entirely.
+the only point of this repository, besides featuring a less opinionated installer (as i consider that you should not touch config the user's config files without their consent), is to continue providing support for the ubiquitous unit tester that this remains, despite its many flaws.
+## consider writing your own tests, and complementing yours with those of others.
 
 An easy to use testing framework for the 42 projects.
 
@@ -54,18 +60,30 @@ Copy the line bellow to your console and execute it. It will automatically downl
 create the necessary folders and alias, and install a python virtual environment dedicated to
 running this tool.
 
-In linux it will also download and install the necessary packages for it to run. It needs
-admin permission to do that.
+~~In linux it will also download and install the necessary packages for it to run. It needs
+admin permission to do that.~~
+
+no root permissions are required. (note that, even with the upstream installation script, merely cancelling with `Control C` the right amount of times would continue on to install the francinette successfully, assuming no package upgrades were required.)
 
 ```
-bash -c "$(curl -fsSL https://raw.github.com/jaynemaxwell/xicodomingues_francinette/master/bin/install.sh)"
+bash -c "$(curl -fsSL https://raw.github.com/jaynemaxwell/rancinette/master/bin/install.sh)"
 ```
 
-The francinette folder will be under your `$HOME` directory (`/Users/<your_username>/`)
+~~The francinette folder will be under your `$HOME` directory (`/Users/<your_username>/`)~~
+
+the default installation directory is under `~/.local/opt/`.
+
+the entry point will, by default, live in `~/.local/bin/`.
+
+note that eventually the installer may prompt for custom locations for either of these.
 
 
 ## Update:
 Normally francinette will prompt you when there is a new version, and you can then update it.
+
+> [!Warning]
+> note that updating is likely broken as i am yet to refactor it.
+> consider pulling from the repository instead, by going to the installation directory (`~/.local/opt/` by default) and calling `git pull`.
 
 You can also force it from francinette itself:
 
@@ -76,7 +94,7 @@ You can also force it from francinette itself:
 If the above does not work you can also execute the command bellow:
 
 ```
-bash -c "$(curl -fsSL https://raw.github.com/xicodomingues/francinette/master/bin/update.sh)"
+bash -c "$(curl -fsSL https://raw.github.com/jaynemaxwell/rancinette/master/bin/update.sh)"
 ```
 
 
@@ -113,6 +131,9 @@ what project to execute.
 This command clones the git repository present in `git@repo42.com/intra-uuid-234` into the
 current folder and executes the corresponding tests
 
+> [!Warning]
+> this is subject to change in order not to polute the user's home.
+
 All the files are copied to the folder `~/francinette/temp/<project>`. In here is where the
 norminette is checked, the code compiled and the tests executed. Normally you do not need to
 access this directory for anything. But if you run into unexpected problems, this is where
@@ -123,20 +144,24 @@ Log files can be found in: `~/francinette/logs`
 
 ## Uninstall
 
-To uninstall `francinette` delete the `francinette` folder. It should be located under your
-`$HOME` directory (`/Users/<your_username>/` or `/home/<your_username>/`)
-
-You also need to remove the automatically created aliases. For that open your `~/.zshrc` 
-file and delete the lines:
-
+assuming default installation path, the following will effectively uninstall francinette.
+```sh
+cd $HOME/.local/
+[ -e bin ] && rm -rf ./bin/francinette
+[ -e opt ] && rm -rf ./opt/francinette
 ```
-alias francinette="$HOME"/francinette/tester.sh
-alias paco="$HOME"/francinette/tester.sh
-```
+
+depending on whether you decided to grant the installation script this privilege or not,
+it is possible for your .*rc to have had a PATH export appended to it.
+contrary to upstream, no aliases are created, as entry points in `~/.local/bin/` are preferred ;
+namely, `francinette`, and potentially, `paco`.
+
 
 ## FAQ
 
 If you have any questions you can create an issue or reach me on slack under `fsoares-`
+
+consider bothering me for issues related to this fork (login : `jmaxwell`)
 
 #### I'm more advanced than the tests you have available. When are you adding more tests?
 
@@ -169,22 +194,22 @@ it gives a Timeout.
 
 #### I've installed francinette, but when I try to execute it I get the message: `command not found: francinette`
 
-In the install script I try to set two alias to for `francinette`: `francinette` and `paco`. 
-If you are in MacOS I do that by adding two lines to the `.zshrc` file, and to `.bashrc` in 
-linux. If by some chance you are using other shell, or for some other reason it does not work, 
-You can try to set the aliases yourself, by adding:
+it is likely that the entry points directory may not be present in your PATH variable.
+consider the following options :
 
-```
-alias francinette="$HOME"/francinette/tester.sh
-alias paco="$HOME"/francinette/tester.sh
-```
+##### running the installer again
+copy the bootstrapper link at [Install](#install) and input 'Y' when prompted for whether to add `~/.local/bin/` to the path (which will essentially run the line below, appending a PATH redefinition to your *.rc)
 
-Now it should work. If it does not, don't be afraid to contact me.
+##### adding it manually
+```sh
+echo 'export PATH=$PATH:'"$HOME"'/.local/bin/' >> $HOME/.${SHELL##/bin/}rc
+```
 
 ## Acknowledgments
 
-* To 42 for providing me this opportunity
-* To [Tripouille](https://github.com/Tripouille) for [libftTester](https://github.com/Tripouille/libftTester), [gnlTester](https://github.com/Tripouille/gnlTester) and [printfTester](https://github.com/Tripouille/printfTester)
+* To 42 for providing me this opportunity (ditto)
+* to [Xicodomingues](https://github.com/xicodomingues) for [Francinette](https://github.com/xicodomingues/francinette)
+* To [Tripouille](https://github.com/Tripouille) for [libftTester](https://github.com/Tripouille/libftTester)[gnlTester](https://github.com/Tripouille/gnlTester) and [printfTester](https://github.com/Tripouille/printfTester)
 * To [jtoty](https://github.com/jtoty) and [y3ll0w42](https://github.com/y3ll0w42) for [libft-war-machine](https://github.com/y3ll0w42/libft-war-machine)
 * To [alelievr](https://github.com/alelievr) for [libft-unit-test](https://github.com/alelievr/libft-unit-test) and [printf-unit-test](https://github.com/alelievr/printf-unit-test)
 * To [cacharle](https://github.com/cacharle) for [ft_printf_test](https://github.com/cacharle/ft_printf_test)
